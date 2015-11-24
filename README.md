@@ -1,8 +1,8 @@
 
 
 * Must add keystore.p12 for this to work
-* Must export server_ssl_key_store_password=<password>
-* Must export server_ssl_key_store=<keystore-file>
+* Must ```export server_ssl_key_store_password=password```
+* Must ```export server_ssl_key_store=keystore-file```
 
 
 To use:
