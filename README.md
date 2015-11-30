@@ -14,6 +14,6 @@ To run service:
 
 ./gradlew clean build run
 
-To use:
+To call service:
 
 curl -u my-api-key-id:my-api-key-secret  --insecure -H "Accept: application/json"  -L https://localhost:9000/greeting
