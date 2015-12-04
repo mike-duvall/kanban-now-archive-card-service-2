@@ -9,7 +9,8 @@ buildscript {
 }
 
 apply plugin: 'java'
-//apply plugin: 'maven'
+apply plugin: 'groovy'
+
 apply plugin: 'spring-boot'
 
 group = 'com.stormpath'
@@ -26,5 +27,10 @@ repositories {
 dependencies {
 //    compile group: 'com.stormpath.spring', name: 'stormpath-default-spring-boot-starter', version:'1.0.RC5'
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC6'
+
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.5'
+    testCompile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+
 
 }
