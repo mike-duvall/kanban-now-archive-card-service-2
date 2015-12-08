@@ -9,6 +9,7 @@ import spock.lang.Specification
 import java.security.KeyStore
 
 
+
 @Ignore
 class SampleSpec extends Specification {
 
@@ -54,7 +55,7 @@ class SampleSpec extends Specification {
 
         def response = callRest {
             restClient.get(
-                    path : '/greeting',
+                    path : '/archivedCards',
                     requestContentType:  'application/json',
                     headers: ["Authorization" : headerValue ]
 
@@ -63,7 +64,9 @@ class SampleSpec extends Specification {
 
 
         then:
-        assert response.responseData.content == "Hello, Mike DuVall!"
+        assert response.responseData.size == 2
+        assert response.responseData[0].text == "Take Claritin"
+        assert response.responseData[1].text == "Save the whales"
 
     }
 
