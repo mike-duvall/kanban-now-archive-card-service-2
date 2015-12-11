@@ -10,8 +10,9 @@ import java.security.KeyStore
 
 
 
-@Ignore
-class SampleSpec extends Specification {
+// For now, you will need to copy a test ssl keystore to src/test/resources in order to run this test
+//@Ignore
+class ArchivedCardsSpec extends Specification {
 
     String host = "localhost"
     String port = "9000"
@@ -21,7 +22,7 @@ class SampleSpec extends Specification {
 
 
 
-    def "Sample"() {
+    def "get cards"() {
 
         when:
         String accessKeyId  = System.getProperty("accessKeyId")

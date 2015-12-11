@@ -1,6 +1,12 @@
 This service uses Stormpath API Keys and SSL.
 You will need a Stormpath account with an API Key and API Key Secret.
 
+You will need to set the Stormpath api key environment variables:
+
+* ```export stormpath_apiKey_id=<some-value>```
+* ```export stormpath_apiKey_secret=<some-value>```
+
+
 In order to setup SSL, you must setup your own SSL keystore file and password set environment variables to tell the service where the file is and what the password is: 
 * ```export server_ssl_key_store=some-keystore-file```
 * ```export server_ssl_key_store_password=some-password```
