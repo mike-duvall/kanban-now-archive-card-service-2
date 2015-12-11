@@ -11,7 +11,7 @@ import java.security.KeyStore
 
 
 // For now, you will need to copy a test ssl keystore to src/test/resources in order to run this test
-//@Ignore
+@Ignore
 class ArchivedCardsSpec extends Specification {
 
     String host = "localhost"
