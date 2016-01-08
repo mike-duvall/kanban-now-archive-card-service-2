@@ -6,3 +6,4 @@ build
 *.iws
 target
 keystore.p12
+manifest.yml
