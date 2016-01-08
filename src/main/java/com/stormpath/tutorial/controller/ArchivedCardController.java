@@ -1,10 +1,14 @@
 package com.stormpath.tutorial.controller;
 
+import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.servlet.account.AccountResolver;
+import com.stormpath.tutorial.exception.ForbiddenException;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +17,12 @@ public class ArchivedCardController {
 
 
     @RequestMapping("/archivedCards")
-    public List<ArchivedCard> archivedCard() {
+    public List<ArchivedCard> archivedCard(HttpServletRequest req) {
+
+        Account account = AccountResolver.INSTANCE.getAccount(req);
+
+        if (account == null) { throw new ForbiddenException(); }
+
         List<ArchivedCard> archivedCardList = new ArrayList<ArchivedCard>();
         ArchivedCard card1 = new ArchivedCard();
 
