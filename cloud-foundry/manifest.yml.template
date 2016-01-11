@@ -1,8 +1,8 @@
 ---
 applications:
-- name: mike-test-4
+- name: archive-card-service-2
   buildpack: https://github.com/cloudfoundry/java-buildpack
-  path: ../build/libs/kanban-now-archive-card-service-2-0.1.0.jar
+  path: ../build/libs/archive-card-service-2-0.1.0.jar
   env:
     stormpath_apiKey_id: ${stormpath_apiKey_id}
     stormpath_apiKey_secret: ${stormpath_apiKey_secret}

@@ -26,6 +26,20 @@ repositories {
     mavenCentral()
 }
 
+
+
+task writeCloudFoundryManifest(type: Copy) {
+    from 'cloud-foundry'
+    into "${buildDir}"
+    include 'manifest.yml.template'
+    rename { file -> 'manifest.yml' }
+    expand([
+            stormpath_apiKey_id: "$System.env.stormpath_apiKey_id",
+            stormpath_apiKey_secret: "$System.env.stormpath_apiKey_secret"
+    ])
+}
+
+
 dependencies {
 //    compile group: 'com.stormpath.spring', name: 'stormpath-default-spring-boot-starter', version:'1.0.RC5'
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC6'
