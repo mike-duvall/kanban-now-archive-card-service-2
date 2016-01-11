@@ -26,6 +26,7 @@ repositories {
     mavenCentral()
 }
 
+// Test of how Snap CI handles a PR
 
 
 task writeCloudFoundryManifest(type: Copy) {
