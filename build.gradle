@@ -13,6 +13,8 @@ apply plugin: 'groovy'
 
 apply plugin: 'spring-boot'
 
+archivesBaseName = 'archive-card-service-2'
+
 group = 'com.stormpath'
 version = '0.1.0'
 
