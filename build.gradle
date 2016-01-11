@@ -35,7 +35,8 @@ task writeCloudFoundryManifest(type: Copy) {
     rename { file -> 'manifest.yml' }
     expand([
             stormpath_apiKey_id: "$System.env.stormpath_apiKey_id",
-            stormpath_apiKey_secret: "$System.env.stormpath_apiKey_secret"
+            stormpath_apiKey_secret: "$System.env.stormpath_apiKey_secret",
+            deployment_environment: "$System.env.deployment_environment"
     ])
 }
 

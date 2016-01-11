@@ -1,6 +1,6 @@
 ---
 applications:
-- name: archive-card-service-2-development
+- name: archive-card-service-2-${deployment_environment}
   buildpack: https://github.com/cloudfoundry/java-buildpack
   path: ../build/libs/archive-card-service-2-0.1.0.jar
   env:
