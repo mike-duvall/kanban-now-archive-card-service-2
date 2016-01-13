@@ -42,6 +42,12 @@ task writeCloudFoundryManifest(type: Copy) {
     ])
 }
 
+//task cfPush(dependsOn:[writeCloudFoundryManifest,cfLogin], type:Exec){
+task cfPush(dependsOn:[], type:Exec){
+    commandLine "cf","push","-f","${buildDir}/manifest.yml"
+}
+
+
 
 dependencies {
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC6'
