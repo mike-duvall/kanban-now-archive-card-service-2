@@ -2,7 +2,6 @@ package main
 
 import groovyx.net.http.RESTClient
 import org.apache.http.client.HttpResponseException
-import spock.lang.Ignore
 import spock.lang.Specification
 
 
@@ -13,12 +12,12 @@ class ArchivedCardsSpec extends Specification {
     String host = readTestProperty("serviceHost")
     String port = readTestProperty("servicePort")
 
-
     String accessKeyId = readTestProperty("accessKeyId")
     String secretKey = readTestProperty("secretKey")
 
+    String urlProtocol = readTestProperty("urlProtocol")
 
-    String baseUrl = "https://${host}:${port}/"
+    String baseUrl = "${urlProtocol}://${host}:${port}/"
     RESTClient restClient = new RESTClient(baseUrl)
 
     String userAndPassword = accessKeyId + ":" + secretKey
