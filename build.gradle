@@ -48,6 +48,29 @@ dependencies {
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.5'
     testCompile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
-
-
 }
+
+sourceSets {
+    integrationTest {
+        java {
+            srcDirs = ['src/main/java']
+        }
+
+        groovy {
+            srcDirs = ['src/integrationTest/groovy']
+        }
+
+        resources.srcDir file('src/integrationTest/resources')
+        compileClasspath = sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath = output + compileClasspath
+    }
+}
+
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    systemProperties = System.properties
+}
+
+
