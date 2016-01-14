@@ -50,8 +50,11 @@ task cfPush(dependsOn:[], type:Exec){
 
 
 dependencies {
-    compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC6'
+    compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8'
+
     compile('org.springframework.boot:spring-boot-starter-jdbc')
+//    compile "org.springframework.boot:spring-boot-starter-jersey"
+
     compile('org.postgresql:postgresql')
 
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.5'

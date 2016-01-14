@@ -2,12 +2,14 @@ package main
 
 import groovyx.net.http.RESTClient
 import org.apache.http.client.HttpResponseException
+import spock.lang.Ignore
 import spock.lang.Specification
 
 
 class ArchivedCardsSpec extends Specification {
 
     static final int HTTP_OK = 200
+    static final int HTTP_FORBIDDEN = 403
 
     String host = readTestProperty("serviceHost")
     String port = readTestProperty("servicePort")
@@ -33,6 +35,7 @@ class ArchivedCardsSpec extends Specification {
         return result
     }
 
+    @Ignore
     def "get cards"() {
         when:
         def response = callRest {
@@ -50,6 +53,29 @@ class ArchivedCardsSpec extends Specification {
         assert response.responseData[1].text == "Save the whales"
     }
 
+
+
+    def "unauthorized user gets denied access"() {
+        given:
+        String baseUserAndPassword = accessKeyId + ":" + secretKey + "xxx"
+        String badUserAndPasswordEncoded = baseUserAndPassword.bytes.encodeBase64().toString()
+        String headerValue = "Basic " + badUserAndPasswordEncoded
+
+        when:
+        def response = callRest {
+            restClient.get(
+                    path : '/archivedCards',
+                    requestContentType:  'application/json',
+                    headers: ["Authorization" : headerValue ]
+
+            )
+        }
+
+        then:
+        assert response.status == HTTP_FORBIDDEN
+
+
+    }
 
     def "add cards then retrieve them"() {
 
