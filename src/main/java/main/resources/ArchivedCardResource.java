@@ -1,35 +1,46 @@
-package main.controller;
+package main.resources;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
+import main.api.ArchivedCard;
 import main.exception.ForbiddenException;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@RestController
-public class ArchivedCardController {
+@Component
+@Path("/archivedCards")
+@Produces(MediaType.APPLICATION_JSON)
+public class ArchivedCardResource {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     private static String archivedCardsTableName = "public.test_table_for_mike";
 
-    @RequestMapping(value = "/archivedCards",  method = RequestMethod.GET)
-    public List<ArchivedCard> getArrchivedCards(HttpServletRequest req) {
 
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+    @Context
+    private HttpServletRequest servletRequest;
+//    @Context private HttpServletContext servletContext;
+
+    @GET
+    public List<ArchivedCard> getArrchivedCards() {
+
+        Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
 
         if (account == null) { throw new ForbiddenException(); }
 
@@ -47,10 +58,11 @@ public class ArchivedCardController {
         return archivedCardList;
     }
 
-    @RequestMapping(value = "/archivedCards",  method = RequestMethod.POST)
-    public ArchivedCard addArchivedCard(HttpServletRequest req, @RequestBody ArchivedCard archivedCard) {
+//    @RequestMapping(value = "/archivedCards",  method = RequestMethod.POST)
+    @POST
+    public ArchivedCard addArchivedCard(  ArchivedCard archivedCard) {
 
-        Account account = AccountResolver.INSTANCE.getAccount(req);
+        Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
 
         if (account == null) { throw new ForbiddenException(); }
 

@@ -1,8 +1,12 @@
 package main.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class ForbiddenException extends RuntimeException {
+public class ForbiddenException extends WebApplicationException {
+    public ForbiddenException() {
+        super(Response.status(Response.Status.FORBIDDEN)
+                      .entity("").type(MediaType.TEXT_PLAIN).build());
+    }
 }

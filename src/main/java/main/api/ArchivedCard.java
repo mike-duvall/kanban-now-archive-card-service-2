@@ -1,4 +1,4 @@
-package main.controller;
+package main.api;
 
 public class ArchivedCard {
 

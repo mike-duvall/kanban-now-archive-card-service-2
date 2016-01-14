@@ -35,25 +35,6 @@ class ArchivedCardsSpec extends Specification {
         return result
     }
 
-    @Ignore
-    def "get cards"() {
-        when:
-        def response = callRest {
-            restClient.get(
-                    path : '/archivedCards',
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : headerValue ]
-
-            )
-        }
-
-        then:
-        assert response.responseData.size == 2
-        assert response.responseData[0].text == "Take Claritin"
-        assert response.responseData[1].text == "Save the whales"
-    }
-
-
 
     def "unauthorized user gets denied access"() {
         given:

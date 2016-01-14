@@ -53,7 +53,7 @@ dependencies {
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8'
 
     compile('org.springframework.boot:spring-boot-starter-jdbc')
-//    compile "org.springframework.boot:spring-boot-starter-jersey"
+    compile "org.springframework.boot:spring-boot-starter-jersey"
 
     compile('org.postgresql:postgresql')
 
