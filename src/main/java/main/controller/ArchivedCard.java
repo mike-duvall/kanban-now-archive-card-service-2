@@ -1,4 +1,4 @@
-package com.stormpath.tutorial.controller;
+package main.controller;
 
 public class ArchivedCard {
 

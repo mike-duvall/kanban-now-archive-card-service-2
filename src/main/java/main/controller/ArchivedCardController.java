@@ -1,8 +1,8 @@
-package com.stormpath.tutorial.controller;
+package main.controller;
 
 import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.servlet.account.AccountResolver;
-import com.stormpath.tutorial.exception.ForbiddenException;
+import main.exception.ForbiddenException;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
