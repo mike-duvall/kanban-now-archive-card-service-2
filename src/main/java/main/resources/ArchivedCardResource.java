@@ -44,11 +44,7 @@ public class ArchivedCardResource {
 
     @GET
     public List<ArchivedCard> getArrchivedCards() {
-
-        Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
-
-        if (account == null) { throw new ForbiddenException(); }
-
+        securityCheck();
         List<ArchivedCard> archivedCardList = this.jdbcTemplate.query(
                 "select * from " + archivedCardsTableName,
                 new RowMapper<ArchivedCard>() {
@@ -66,10 +62,13 @@ public class ArchivedCardResource {
 
     @POST
     public ArchivedCard addArchivedCard(  ArchivedCard archivedCard) {
+        securityCheck();
+        return insertArchivedCard(archivedCard);
+    }
 
+    private void securityCheck() {
         Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
         if (account == null) { throw new ForbiddenException(); }
-        return insertArchivedCard(archivedCard);
     }
 
 
@@ -98,7 +97,7 @@ public class ArchivedCardResource {
     @DELETE
     @Path("{id}")
     public Response delete(@PathParam("id") Long id) {
-
+        securityCheck();
         this.jdbcTemplate.update(
                 "delete from " + archivedCardsTableName + " where id = ?",
                 Long.valueOf(id));
