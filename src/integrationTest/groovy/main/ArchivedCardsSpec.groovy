@@ -2,13 +2,13 @@ package main
 
 import groovyx.net.http.RESTClient
 import org.apache.http.client.HttpResponseException
-import spock.lang.Ignore
 import spock.lang.Specification
 
 
 class ArchivedCardsSpec extends Specification {
 
     static final int HTTP_OK = 200
+    static final int HTTP_NO_CONTENT = 204
     static final int HTTP_FORBIDDEN = 403
 
     String host = readTestProperty("serviceHost")
@@ -36,7 +36,7 @@ class ArchivedCardsSpec extends Specification {
     }
 
 
-    def "unauthorized user gets denied access"() {
+    def "unauthorized user cannot call GET"() {
         given:
         String baseUserAndPassword = accessKeyId + ":" + secretKey + "xxx"
         String badUserAndPasswordEncoded = baseUserAndPassword.bytes.encodeBase64().toString()
@@ -55,18 +55,16 @@ class ArchivedCardsSpec extends Specification {
         then:
         assert response.status == HTTP_FORBIDDEN
 
-
     }
 
-    def "add cards then retrieve them"() {
-
+    def "add, retrieve, and delete cards"() {
         when:
         def newCard1 = [
                 text: 'A new card',
                 date: '1/1/1967'
         ]
 
-        def postResponse = callRest {
+        def response = callRest {
             restClient.post(
                     path : '/archivedCards',
                     body: newCard1,
@@ -77,10 +75,13 @@ class ArchivedCardsSpec extends Specification {
         }
 
         then:
-        assert postResponse.status == HTTP_OK
+        assert response.status == HTTP_OK
+        assert response.responseData.text == newCard1.text
+        assert response.responseData.date == newCard1.date
+        assert response.responseData.id != null
 
-        and:
-        def response = callRest {
+        when:
+        response = callRest {
             restClient.get(
                     path : '/archivedCards',
                     requestContentType:  'application/json',
@@ -92,6 +93,36 @@ class ArchivedCardsSpec extends Specification {
         then:
         assert response.responseData.size == 1
         assert response.responseData[0].text == newCard1.text
+        assert response.responseData[0].date == newCard1.date
+        assert response.responseData[0].id != null
+
+
+        when:
+        String deletePath = '/archivedCards/' + response.responseData[0].id
+        response = callRest {
+            restClient.delete(
+                    path : deletePath,
+                    requestContentType:  'application/json',
+                    headers: ["Authorization" : headerValue ]
+
+            )
+        }
+
+        then:
+        assert response.status == HTTP_NO_CONTENT
+
+        when:
+        response = callRest {
+            restClient.get(
+                    path : '/archivedCards',
+                    requestContentType:  'application/json',
+                    headers: ["Authorization" : headerValue ]
+
+            )
+        }
+
+        then:
+        assert response.responseData.size == 0
 
     }
 

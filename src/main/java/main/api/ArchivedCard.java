@@ -2,6 +2,7 @@ package main.api;
 
 public class ArchivedCard {
 
+    private Long id;
     private String text;
     private String date;
 
@@ -22,6 +23,11 @@ public class ArchivedCard {
         this.date = date;
     }
 
+    public Long getId() {
+        return id;
+    }
 
-
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
