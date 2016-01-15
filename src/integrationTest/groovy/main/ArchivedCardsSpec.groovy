@@ -44,7 +44,7 @@ class ArchivedCardsSpec extends Specification {
         def response = callRest {
             restClient.get(
                     path : '/archivedCards',
-                    requestContentType:  'application/json',
+                    contentType:  'application/json',
                     headers: ["Authorization" : bogusAuthHeader ]
 
             )
@@ -68,7 +68,7 @@ class ArchivedCardsSpec extends Specification {
             restClient.post(
                     path : '/archivedCards',
                     body: newCard1,
-                    requestContentType:  'application/json',
+                    contentType:  'application/json',
                     headers: ["Authorization" : bogusAuthHeader ]
 
             )
@@ -90,7 +90,7 @@ class ArchivedCardsSpec extends Specification {
         def response = callRest {
             restClient.delete(
                     path : deletePath,
-                    requestContentType:  'application/json',
+                    contentType:  'application/json',
                     headers: ["Authorization" : bogusAuthHeader ]
 
             )
@@ -105,24 +105,23 @@ class ArchivedCardsSpec extends Specification {
     def "add, retrieve, and delete cards"() {
         when:
         def newCard1 = [
-                text: 'A new card',
-                date: '1/1/1967'
+                text: 'A new card'
         ]
 
         def response = callRest {
             restClient.post(
                     path : '/archivedCards',
                     body: newCard1,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
+                    contentType:  'application/json',
+                    headers: ["Authorization" : validAuthHeader]
             )
         }
+        newCard1 = response.responseData
 
         then:
         assert response.status == HTTP_OK
         assert response.responseData.text == newCard1.text
-        assert response.responseData.date == newCard1.date
+        assert response.responseData.date != null
         assert response.responseData.id != null
 
         when:
