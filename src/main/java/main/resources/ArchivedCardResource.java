@@ -42,8 +42,6 @@ import java.util.TimeZone;
 @Produces(MediaType.APPLICATION_JSON)
 public class ArchivedCardResource {
 
-
-
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -56,23 +54,36 @@ public class ArchivedCardResource {
     private HttpServletRequest servletRequest;
 
     @GET
-    public List<ArchivedCard> getArrchivedCards() {
+    @Path("{userId}")
+    public List<ArchivedCard> getArrchivedCards(@PathParam("userId") String userId) {
         securityCheck();
+        String query = "select cardtext, archiveddate, id, user_id from " + archivedCardsTableName +
+                " where user_id = ?";
+        String[] parameters = new String[] {userId};
         List<ArchivedCard> archivedCardList = this.jdbcTemplate.query(
-                "select cardtext, archiveddate, id from " + archivedCardsTableName,
-                new RowMapper<ArchivedCard>() {
-                    public ArchivedCard mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        ArchivedCard card = new ArchivedCard();
-                        card.setText(rs.getString("cardtext"));
-                        Timestamp archiveDateTimestamp = rs.getTimestamp("archiveddate", tzUTC);
-                        card.setDate(convertTimestampToISO8601String(archiveDateTimestamp));
-                        card.setId(rs.getLong("id"));
-                        return card;
-                    }
-                });
+                query,
+                parameters,
+                new ArchivedCardRowMapper()
+        );
 
         return archivedCardList;
     }
+
+
+    private class ArchivedCardRowMapper implements RowMapper<ArchivedCard> {
+        @Override
+        public ArchivedCard mapRow(ResultSet rs, int rowNum) throws SQLException {
+            ArchivedCard card = new ArchivedCard();
+            card.setText(rs.getString("cardtext"));
+            Timestamp archiveDateTimestamp = rs.getTimestamp("archiveddate", tzUTC);
+            card.setDate(convertTimestampToISO8601String(archiveDateTimestamp));
+            card.setId(rs.getLong("id"));
+            card.setUserId(rs.getString("user_id"));
+            return card;
+        }
+    };
+
+
 
     private String convertTimestampToISO8601String(Timestamp timestamp) {
         Date returnedDate = new Date(timestamp.getTime());
@@ -83,17 +94,26 @@ public class ArchivedCardResource {
     }
 
     @POST
-    public ArchivedCard addArchivedCard(  ArchivedCard archivedCard) {
+    @Path("{userId}")
+    public ArchivedCard addArchivedCard( @PathParam("userId") String userId, ArchivedCard archivedCard) {
         securityCheck();
-        return insertArchivedCard(archivedCard);
+        return insertArchivedCard(userId, archivedCard);
     }
+
+
 
     private void securityCheck() {
         Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
-        DefaultAccount defaultAccount = (DefaultAccount) account;
-        String href = defaultAccount.getHref();
-        String stormpathId = parseStormPathIdFromHref(href);
-        if (account == null) { throw new ForbiddenException(); }
+        if (account == null){
+            throw new ForbiddenException();
+        }
+        else {
+            DefaultAccount defaultAccount = (DefaultAccount) account;
+            String href = defaultAccount.getHref();
+            String stormpathId = parseStormPathIdFromHref(href);
+            int x = 3;
+        }
+
     }
 
     private String parseStormPathIdFromHref(String href) {
@@ -103,8 +123,8 @@ public class ArchivedCardResource {
     }
 
 
-    private ArchivedCard insertArchivedCard(ArchivedCard archivedCard) {
-        final String INSERT_SQL = "insert into " + archivedCardsTableName + " (cardtext, archiveddate) values (?, ?)";
+    private ArchivedCard insertArchivedCard(final String userId, ArchivedCard archivedCard) {
+        final String INSERT_SQL = "insert into " + archivedCardsTableName + " (user_id, cardtext, archiveddate) values (?, ?, ?)";
         final String cardText = archivedCard.getText();
         java.util.Date currentDateAndTime = new java.util.Date();
         final Timestamp archiveDateTimestamp = new Timestamp( currentDateAndTime.getTime() );
@@ -114,28 +134,50 @@ public class ArchivedCardResource {
                 public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
                     String[] keysToReturnInKeyHolder = new String[] {"id"};
                     PreparedStatement ps = connection.prepareStatement(INSERT_SQL, keysToReturnInKeyHolder);
-                    ps.setString(1, cardText );
-                    ps.setTimestamp(2, archiveDateTimestamp, tzUTC );
+                    ps.setString(1, userId );
+                    ps.setString(2, cardText );
+                    ps.setTimestamp(3, archiveDateTimestamp, tzUTC );
                     return ps;
                 }
             },
             keyHolder);
 
         archivedCard.setId(keyHolder.getKey().longValue());
+        archivedCard.setUserId(userId);
         archivedCard.setDate(convertTimestampToISO8601String(archiveDateTimestamp));
         return archivedCard;
     }
 
 
     @DELETE
-    @Path("{id}")
-    public Response delete(@PathParam("id") Long id) {
+    @Path("{userId}/{id}")
+    public Response delete(@PathParam("userId") String userId, @PathParam("id") Long cardId) {
         securityCheck();
+        if(!doesCardExist(userId, cardId)) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         this.jdbcTemplate.update(
                 "delete from " + archivedCardsTableName + " where id = ?",
-                Long.valueOf(id));
+                Long.valueOf(cardId));
 
         return Response.noContent().build();
+    }
+
+    private boolean doesCardExist(String userId, Long cardId) {
+        String query = "select cardtext, archiveddate, id, user_id from " + archivedCardsTableName +
+                " where user_id = ? and id = ?";
+        Object[] parameters = new Object[] {userId, cardId};
+        List<ArchivedCard> archivedCardList =
+                jdbcTemplate.query(
+                       query,
+                       parameters,
+                       new ArchivedCardRowMapper());
+        if(archivedCardList.size() > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 }
