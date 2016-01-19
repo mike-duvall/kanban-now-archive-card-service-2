@@ -1,6 +1,7 @@
 package main.resources;
 
 import com.stormpath.sdk.account.Account;
+import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import main.api.ArchivedCard;
 import main.exception.ForbiddenException;
@@ -34,6 +35,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+
+
 @Component
 @Path("/archivedCards")
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,7 +47,7 @@ public class ArchivedCardResource {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    private static String archivedCardsTableName = "public.test_table_for_mike";
+    private static String archivedCardsTableName = "public.archived_card";
     private final Calendar tzUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 
 
@@ -87,7 +90,16 @@ public class ArchivedCardResource {
 
     private void securityCheck() {
         Account account = AccountResolver.INSTANCE.getAccount(servletRequest);
+        DefaultAccount defaultAccount = (DefaultAccount) account;
+        String href = defaultAccount.getHref();
+        String stormpathId = parseStormPathIdFromHref(href);
         if (account == null) { throw new ForbiddenException(); }
+    }
+
+    private String parseStormPathIdFromHref(String href) {
+        int lastSlash = href.lastIndexOf("/");
+        String id = href.substring(lastSlash + 1, href.length());
+        return id;
     }
 
 
