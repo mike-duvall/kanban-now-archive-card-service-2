@@ -38,6 +38,7 @@ task writeCloudFoundryManifest(type: Copy) {
     expand([
             stormpath_apiKey_id: "$System.env.stormpath_apiKey_id",
             stormpath_apiKey_secret: "$System.env.stormpath_apiKey_secret",
+            stormpath_application_href: "$System.env.stormpath_application_href",
             deployment_environment: "$System.env.deployment_environment"
     ])
 }
