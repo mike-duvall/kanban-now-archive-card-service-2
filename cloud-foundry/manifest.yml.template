@@ -6,6 +6,7 @@ applications:
   env:
     stormpath_apiKey_id: ${stormpath_apiKey_id}
     stormpath_apiKey_secret: ${stormpath_apiKey_secret}
+    stormpath_application_href: ${stormpath_application_href}
   services:
     - elephantsql-archive-card-${deployment_environment}
 
