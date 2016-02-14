@@ -56,8 +56,12 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-jdbc')
     compile "org.springframework.boot:spring-boot-starter-jersey"
 
+    compile "org.springframework.boot:spring-boot-starter-actuator"
+
     compile "postgresql:postgresql:9.0-801.jdbc4"
     compile "org.liquibase:liquibase-core"
+
+
 
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.1.5'
     testCompile group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7.1'
