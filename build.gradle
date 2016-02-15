@@ -40,6 +40,7 @@ task writeCloudFoundryManifest(type: Copy) {
             stormpath_apiKey_secret: "$System.env.stormpath_apiKey_secret",
             stormpath_application_href: "$System.env.stormpath_application_href",
             deployment_environment: "$System.env.deployment_environment"
+            security_user_password: "$System.env.security_user_password"
     ])
 }
 
