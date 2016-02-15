@@ -7,6 +7,7 @@ applications:
     stormpath_apiKey_id: ${stormpath_apiKey_id}
     stormpath_apiKey_secret: ${stormpath_apiKey_secret}
     stormpath_application_href: ${stormpath_application_href}
+    security_user_password: ${security_user_password}
   services:
     - elephantsql-archive-card-${deployment_environment}
 
