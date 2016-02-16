@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '1.3.1.RELEASE'
+        springBootVersion = '1.3.2.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -52,7 +52,7 @@ task cfPush(dependsOn:[], type:Exec){
 
 
 dependencies {
-    compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8'
+    compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8.3'
 
     compile('org.springframework.boot:spring-boot-starter-jdbc')
     compile "org.springframework.boot:spring-boot-starter-jersey"
