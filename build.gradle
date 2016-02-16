@@ -50,6 +50,38 @@ task cfPush(dependsOn:[], type:Exec){
 }
 
 
+//task bam(dependsOn:[]) {
+//    ["cf","api","https://api.run.pivotal.io"].execute()
+//}
+
+
+task setCloudFoundryApi(dependsOn:[], type:Exec){
+    commandLine "cf","api","https://api.run.pivotal.io"
+}
+
+task loginToCloudFoundry(dependsOn:[setCloudFoundryApi], type:Exec){
+    commandLine "cf","auth","$System.env.CF_USER" ,"$System.env.CF_PASS"
+}
+
+
+task targetCloudFoundryDevSpace(dependsOn:[loginToCloudFoundry], type:Exec){
+    commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "development"
+}
+
+task createDevPapertrailService(dependsOn:[targetCloudFoundryDevSpace], type:Exec){
+    commandLine "cf","cups","kanban-now-papertrail-logs-development", "-l", "$System.env.papertrail_url"
+}
+
+task targetCloudFoundryProductionSpace(dependsOn:[loginToCloudFoundry], type:Exec){
+    commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "production"
+}
+
+task createProductionPapertrailService(dependsOn:[targetCloudFoundryProductionSpace], type:Exec){
+    commandLine "cf","cups","kanban-now-papertrail-logs-production", "-l", "$System.env.papertrail_url"
+}
+
+
+
 
 dependencies {
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8.3'

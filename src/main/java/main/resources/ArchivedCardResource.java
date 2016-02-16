@@ -57,6 +57,10 @@ public class ArchivedCardResource {
     @Path("{userId}")
     public List<ArchivedCard> getArrchivedCards(@PathParam("userId") String userId) {
         securityCheck();
+        if(userId.equals("boom")) {
+
+            throw new RuntimeException("Test of error logging");
+        }
         String query = "select cardtext, archiveddate, id, user_id from " + archivedCardsTableName +
                 " where user_id = ?";
         String[] parameters = new String[] {userId};
