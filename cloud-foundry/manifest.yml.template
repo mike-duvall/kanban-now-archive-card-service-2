@@ -10,4 +10,5 @@ applications:
     security_user_password: ${security_user_password}
   services:
     - elephantsql-archive-card-${deployment_environment}
+    - kanban-now-papertrail-logs-${deployment_environment}
 
