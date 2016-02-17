@@ -60,6 +60,20 @@ task targetCloudFoundrySpace(dependsOn:[loginToCloudFoundry], type:Exec){
     commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "$System.env.CF_SPACE"
 }
 
+task unbindPapertrailService(dependsOn:[targetCloudFoundrySpace], type:Exec){
+    commandLine "cf","unbind-service", "archive-card-service-2-${System.env.CF_SPACE}",  "kanban-now-papertrail-logs-${System.env.CF_SPACE}"
+}
+
+
+task deletePapertrailService(dependsOn:[targetCloudFoundrySpace,unbindPapertrailService], type:Exec){
+    commandLine "cf","delete-service", "kanban-now-papertrail-logs-${System.env.CF_SPACE}", "-f"
+}
+
+
+task deleteAndCreatePapertrailService(dependsOn:[targetCloudFoundrySpace,deletePapertrailService], type:Exec){
+    commandLine "cf","cups","kanban-now-papertrail-logs-${System.env.CF_SPACE}", "-l", "$System.env.papertrail_url"
+}
+
 task createPapertrailService(dependsOn:[targetCloudFoundrySpace], type:Exec){
     commandLine "cf","cups","kanban-now-papertrail-logs-${System.env.CF_SPACE}", "-l", "$System.env.papertrail_url"
 }
