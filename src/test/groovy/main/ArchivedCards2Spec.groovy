@@ -2,35 +2,24 @@ package main
 
 import groovyx.net.http.RESTClient
 import org.apache.http.client.HttpResponseException
+import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Specification
 
 
 @ComponentTest
 class ArchivedCards2Spec extends Specification {
 
-    def "dummy"() {
-        when:
-        int x = 3
-
-        then:
-        true
-    }
-
     static final int HTTP_OK = 200
     static final int HTTP_NO_CONTENT = 204
     static final int HTTP_FORBIDDEN = 403
     static final int HTTP_NOT_FOUND = 404
 
-    String host = readTestProperty("serviceHost")
-    String port = readTestProperty("servicePort")
+    @Autowired
+    private RESTClient restClient
+
 
     String accessKeyId = readTestProperty("accessKeyId")
     String secretKey = readTestProperty("secretKey")
-
-    String urlProtocol = readTestProperty("urlProtocol")
-
-    String baseUrl = "${urlProtocol}://${host}:${port}/"
-    RESTClient restClient = new RESTClient(baseUrl)
 
     String userAndPassword = accessKeyId + ":" + secretKey
     String userAndPasswordEncoded = userAndPassword.bytes.encodeBase64().toString()
@@ -51,14 +40,11 @@ class ArchivedCards2Spec extends Specification {
         return result
     }
 
-
     def "unauthorized user cannot call GET"() {
         given:
         String bogusAuthHeader = generateBogusAuthenticationHeader()
 
         when:
-        println "baseUrl=${baseUrl}"
-        println "basePathUser1=${basePathUser1}"
         def response = callRest {
             restClient.get(
                     path : basePathUser1,
