@@ -56,20 +56,12 @@ task loginToCloudFoundry(dependsOn:[setCloudFoundryApi], type:Exec){
 }
 
 
-task targetCloudFoundryDevSpace(dependsOn:[loginToCloudFoundry], type:Exec){
-    commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "development"
+task targetCloudFoundrySpace(dependsOn:[loginToCloudFoundry], type:Exec){
+    commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "$System.env.CF_SPACE"
 }
 
-task createDevPapertrailService(dependsOn:[targetCloudFoundryDevSpace], type:Exec){
-    commandLine "cf","cups","kanban-now-papertrail-logs-development", "-l", "$System.env.papertrail_url"
-}
-
-task targetCloudFoundryProductionSpace(dependsOn:[loginToCloudFoundry], type:Exec){
-    commandLine "cf","target","-o", "$System.env.CF_ORG", "-s", "production"
-}
-
-task createProductionPapertrailService(dependsOn:[targetCloudFoundryProductionSpace], type:Exec){
-    commandLine "cf","cups","kanban-now-papertrail-logs-production", "-l", "$System.env.papertrail_url"
+task createPapertrailService(dependsOn:[targetCloudFoundrySpace], type:Exec){
+    commandLine "cf","cups","kanban-now-papertrail-logs-${System.env.CF_SPACE}", "-l", "$System.env.papertrail_url"
 }
 
 
