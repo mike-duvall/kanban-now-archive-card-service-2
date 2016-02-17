@@ -203,7 +203,7 @@ class ArchivedCards2Spec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 2
+        assert response.responseData.size == 1
         assert response.responseData[0].text == newCard2.text
         assert response.responseData[0].userId == newCard2.userId
         assert response.responseData[0].date == newCard2.date
