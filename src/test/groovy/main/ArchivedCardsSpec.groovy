@@ -3,27 +3,35 @@ package main
 import groovyx.net.http.RESTClient
 import org.apache.http.client.HttpResponseException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import spock.lang.Specification
 
 
 @ComponentTest
-class ArchivedCards2Spec extends Specification {
+class ArchivedCardsSpec extends Specification {
 
     static final int HTTP_OK = 200
     static final int HTTP_NO_CONTENT = 204
     static final int HTTP_FORBIDDEN = 403
     static final int HTTP_NOT_FOUND = 404
 
+    private String validAuthHeader
+
     @Autowired
     private RESTClient restClient
 
+    @Autowired
+    private String accesskeyid
 
-    String accessKeyId = readTestProperty("accessKeyId")
-    String secretKey = readTestProperty("secretKey")
+    @Autowired
+    private String secretkey
 
-    String userAndPassword = accessKeyId + ":" + secretKey
-    String userAndPasswordEncoded = userAndPassword.bytes.encodeBase64().toString()
-    String validAuthHeader = "Basic " + userAndPasswordEncoded
+
+    @Bean
+    public String secretkey() {
+        return secretkey;
+    }
+
 
     String userId1 = 'userId1'
     String userId2 = 'userId2'
@@ -31,13 +39,10 @@ class ArchivedCards2Spec extends Specification {
     String basePathUser2 = "/archivedCards/${userId2}"
 
 
-    private static String readTestProperty(String key) {
-        String result = System.getProperty(key)
-        if(result == null) {
-            result = System.getenv(key);
-        }
-
-        return result
+    def setup() {
+        String userAndPassword = accesskeyid + ":" + secretkey
+        String userAndPasswordEncoded = userAndPassword.bytes.encodeBase64().toString()
+        validAuthHeader = "Basic " + userAndPasswordEncoded
     }
 
     def "unauthorized user cannot call GET"() {
@@ -312,14 +317,12 @@ class ArchivedCards2Spec extends Specification {
 
     }
 
-
     private String generateBogusAuthenticationHeader() {
-        String baseUserAndPassword = accessKeyId + ":" + secretKey + "xxx"
+        String baseUserAndPassword = accesskeyid + ":" + secretkey + "xxx"
         String badUserAndPasswordEncoded = baseUserAndPassword.bytes.encodeBase64().toString()
         String headerValue = "Basic " + badUserAndPasswordEncoded
         return headerValue
     }
-
 
 
     static def callRest(def closure) {
@@ -329,7 +332,6 @@ class ArchivedCards2Spec extends Specification {
             return ex.response
         }
     }
-
 
 
 }
