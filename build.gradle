@@ -29,7 +29,6 @@ repositories {
 }
 
 
-
 task writeCloudFoundryManifest(type: Copy) {
     from 'cloud-foundry'
     into "${buildDir}"
@@ -44,16 +43,9 @@ task writeCloudFoundryManifest(type: Copy) {
     ])
 }
 
-//task cfPush(dependsOn:[writeCloudFoundryManifest,cfLogin], type:Exec){
 task cfPush(dependsOn:[], type:Exec){
     commandLine "cf","push","-f","${buildDir}/manifest.yml"
 }
-
-
-//task bam(dependsOn:[]) {
-//    ["cf","api","https://api.run.pivotal.io"].execute()
-//}
-
 
 task setCloudFoundryApi(dependsOn:[], type:Exec){
     commandLine "cf","api","https://api.run.pivotal.io"
@@ -81,8 +73,6 @@ task createProductionPapertrailService(dependsOn:[targetCloudFoundryProductionSp
 }
 
 
-
-
 dependencies {
     compile 'com.stormpath.spring:stormpath-default-spring-boot-starter:1.0.RC8.3'
 
@@ -106,28 +96,4 @@ dependencies {
     }
 
 }
-
-sourceSets {
-    integrationTest {
-        java {
-            srcDirs = ['src/main/java']
-        }
-
-        groovy {
-            srcDirs = ['src/integrationTest/groovy']
-        }
-
-        resources.srcDir file('src/integrationTest/resources')
-        compileClasspath = sourceSets.main.output + configurations.testRuntime
-        runtimeClasspath = output + compileClasspath
-    }
-}
-
-
-task integrationTest(type: Test) {
-    testClassesDir = sourceSets.integrationTest.output.classesDir
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    systemProperties = System.properties
-}
-
 
