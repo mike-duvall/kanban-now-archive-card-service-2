@@ -111,6 +111,82 @@ class ArchivedCardsSpec extends Specification {
     }
 
 
+    def "should allow query of cards for a particular board"() {
+        when:
+        def newCard1 = [
+                text: 'Card for userId1, board 5',
+                boardId: 5
+        ]
+
+        def response = callRest {
+            restClient.post(
+                    path : basePathUser1,
+                    body: newCard1,
+                    contentType:  'application/json',
+                    headers: ["Authorization" : validAuthHeader]
+            )
+        }
+        newCard1 = response.responseData
+
+        then:
+        assert response.status == HTTP_OK
+        assert response.responseData.text == newCard1.text
+        assert response.responseData.userId == userId1
+        assert response.responseData.date != null
+        assert response.responseData.id != null
+        assert response.responseData.boardId == newCard1.boardId
+
+        when:
+        def newCard2 = [
+                text: 'Card for userId1, board 7',
+                boardId: 7
+        ]
+
+
+        response = callRest {
+            restClient.post(
+                    path : basePathUser1,
+                    body: newCard2,
+                    contentType:  'application/json',
+                    headers: ["Authorization" : validAuthHeader]
+            )
+        }
+        newCard2 = response.responseData
+
+        then:
+        assert response.status == HTTP_OK
+        assert response.responseData.text == newCard2.text
+        assert response.responseData.userId == userId1
+        assert response.responseData.date != null
+        assert response.responseData.id != null
+        assert response.responseData.boardId == newCard2.boardId
+
+
+
+        when:
+        response = callRest {
+            restClient.get(
+                    path : basePathUser1,
+                    requestContentType:  'application/json',
+                    query:[boardId: 7],
+                    headers: ["Authorization" : validAuthHeader ]
+
+            )
+        }
+
+        then:
+        assert response.status == HTTP_OK
+        assert response.responseData.size == 1
+        assert response.responseData[0].text == newCard2.text
+        assert response.responseData[0].userId == newCard2.userId
+        assert response.responseData[0].date == newCard2.date
+        assert response.responseData[0].id != null
+        assert response.responseData[0].boardId == 7
+
+    }
+
+
+
     def "add, retrieve, and delete cards, for two users"() {
         when:
 
@@ -136,9 +212,8 @@ class ArchivedCardsSpec extends Specification {
         assert response.responseData.date != null
         assert response.responseData.id != null
 
+
         when:
-
-
         def newCard2 = [
                 text: 'A new card for user 2'
         ]

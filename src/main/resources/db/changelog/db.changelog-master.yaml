@@ -5,3 +5,6 @@ databaseChangeLog:
 
   - include:
       file: db/add_user_id_column.sql
+
+  - include:
+      file: db/add_board_id_column.sql

@@ -20,6 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,6 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,18 +57,35 @@ public class ArchivedCardResource {
 
     @GET
     @Path("{userId}")
-    public List<ArchivedCard> getArrchivedCards(@PathParam("userId") String userId) {
+    public List<ArchivedCard> getArrchivedCards(@PathParam("userId") String userId, @QueryParam("boardId") Long boardId) {
         securityCheck();
         if(userId.equals("boom")) {
-
             throw new RuntimeException("Test of error logging");
         }
-        String query = "select cardtext, archiveddate, id, user_id from " + archivedCardsTableName +
-                " where user_id = ?";
-        String[] parameters = new String[] {userId};
+
+        String query;
+        Object[] parameters;
+        int[] types;
+
+        if(boardId != null) {
+            query = "select cardtext, archiveddate, id, user_id, board_id from " + archivedCardsTableName +
+                    " where user_id = ? and board_id = ?";
+
+            parameters = new Object[] {userId, boardId};
+            types = new int[] {Types.VARCHAR, Types.BIGINT};
+        }
+        else {
+            query = "select cardtext, archiveddate, id, user_id, board_id from " + archivedCardsTableName +
+                    " where user_id = ?";
+
+            parameters = new Object[] {userId};
+            types = new int[] {Types.VARCHAR};
+        }
+
         List<ArchivedCard> archivedCardList = this.jdbcTemplate.query(
                 query,
                 parameters,
+                types,
                 new ArchivedCardRowMapper()
         );
 
@@ -83,6 +102,7 @@ public class ArchivedCardResource {
             card.setDate(convertTimestampToISO8601String(archiveDateTimestamp));
             card.setId(rs.getLong("id"));
             card.setUserId(rs.getString("user_id"));
+            card.setBoardId(rs.getLong("board_id"));
             return card;
         }
     };
@@ -128,8 +148,20 @@ public class ArchivedCardResource {
 
 
     private ArchivedCard insertArchivedCard(final String userId, ArchivedCard archivedCard) {
-        final String INSERT_SQL = "insert into " + archivedCardsTableName + " (user_id, cardtext, archiveddate) values (?, ?, ?)";
+
         final String cardText = archivedCard.getText();
+        final Long boardId = archivedCard.getBoardId();
+
+        String INSERT_SQL_WITH_BOARD = "insert into " + archivedCardsTableName + " (user_id, cardtext, archiveddate, board_id) values (?, ?, ?, ?)";
+        String INSERT_SQL_WITHOUT_BOARD = "insert into " + archivedCardsTableName + " (user_id, cardtext, archiveddate) values (?, ?, ?)";
+        String sqlToUse = null;
+        if(boardId == null) {
+            sqlToUse = INSERT_SQL_WITHOUT_BOARD;
+        }
+        else {
+            sqlToUse = INSERT_SQL_WITH_BOARD;
+        }
+        final String INSERT_SQL = sqlToUse;
         java.util.Date currentDateAndTime = new java.util.Date();
         final Timestamp archiveDateTimestamp = new Timestamp( currentDateAndTime.getTime() );
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -141,6 +173,8 @@ public class ArchivedCardResource {
                     ps.setString(1, userId );
                     ps.setString(2, cardText );
                     ps.setTimestamp(3, archiveDateTimestamp, tzUTC );
+                    if(boardId != null)
+                        ps.setLong(4, boardId );
                     return ps;
                 }
             },
@@ -168,7 +202,7 @@ public class ArchivedCardResource {
     }
 
     private boolean doesCardExist(String userId, Long cardId) {
-        String query = "select cardtext, archiveddate, id, user_id from " + archivedCardsTableName +
+        String query = "select cardtext, archiveddate, id, user_id, board_id from " + archivedCardsTableName +
                 " where user_id = ? and id = ?";
         Object[] parameters = new Object[] {userId, cardId};
         List<ArchivedCard> archivedCardList =

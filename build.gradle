@@ -89,6 +89,8 @@ dependencies {
 
     compile "postgresql:postgresql:9.0-801.jdbc4"
     compile "org.liquibase:liquibase-core"
+    compile 'org.projectlombok:lombok:1.16.6'
+
 
 
     testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.5'
