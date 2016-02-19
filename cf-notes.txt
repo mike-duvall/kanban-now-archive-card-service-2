@@ -1,0 +1,9 @@
+
+
+Misc. cloud foundry commands.  Putting here until I properly automate them:
+
+cf create-space ci -o mike.a.duvall-org
+
+
+cf create-service elephantsql turtle elephantsql-archive-card-ci
+cf service elephantsql-archive-card-ci
