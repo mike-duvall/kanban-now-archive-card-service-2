@@ -7,3 +7,7 @@ cf create-space ci -o mike.a.duvall-org
 
 cf create-service elephantsql turtle elephantsql-archive-card-ci
 cf service elephantsql-archive-card-ci
+
+
+cf target -s development
+cf stop archive-card-service-2-development
