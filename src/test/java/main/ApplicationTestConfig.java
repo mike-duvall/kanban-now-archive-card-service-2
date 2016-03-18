@@ -20,6 +20,12 @@ public class ApplicationTestConfig {
     String secretkey;
 
 
+
+    @Bean
+    public String baseUrl() {
+        return baseUrl;
+    }
+
     @Bean
     public RESTClient restClient() throws URISyntaxException {
         return new RESTClient(baseUrl);

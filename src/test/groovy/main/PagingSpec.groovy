@@ -1,7 +1,12 @@
 package main
 
+import feign.Feign
+import feign.auth.BasicAuthRequestInterceptor
+import feign.gson.GsonDecoder
+import feign.gson.GsonEncoder
 import groovyx.net.http.RESTClient
-import org.apache.http.client.HttpResponseException
+import main.archivecardserviceclient.ArchivedCardClient
+import main.archivecardserviceclient.Card
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import spock.lang.Specification
@@ -26,6 +31,8 @@ class PagingSpec extends Specification {
     @Autowired
     private String secretkey
 
+    @Autowired
+    private String baseUrl
 
     @Bean
     public String secretkey() {
@@ -50,179 +57,73 @@ class PagingSpec extends Specification {
 
     def "should page results"() {
 
-        xxx
-
-        do paging test here
-
-        consider using FeignClient
-
-
-        when:
-
-        def newCard1 = [
-                text: 'A new card'
-        ]
+        given:
+        ArchivedCardClient archivedCardClient = Feign.builder()
+                .decoder(new GsonDecoder())
+                .encoder(new GsonEncoder())
+                .requestInterceptor(new BasicAuthRequestInterceptor(accesskeyid, secretkey))
+                .target(ArchivedCardClient.class, baseUrl);
 
 
-        def response = callRest {
-            restClient.post(
-                    path : basePathUser1,
-                    body: newCard1,
-                    contentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader]
-            )
-        }
-        newCard1 = response.responseData
+        Card newCard1 = new Card()
+        newCard1.setText("Test text 1")
+        newCard1.setBoardId(444)
+        newCard1 = archivedCardClient.createCard(userId1, newCard1)
 
-        then:
-        assert response.status == HTTP_OK
-        assert response.responseData.text == newCard1.text
-        assert response.responseData.userId == userId1
-        assert response.responseData.date != null
-        assert response.responseData.id != null
+        Card newCard2 = new Card()
+        newCard2.setText("Test text 2")
+        newCard2.setBoardId(445)
+        newCard2 = archivedCardClient.createCard(userId1, newCard2)
 
+        Card newCard3 = new Card()
+        newCard3.setText("Test text 3")
+        newCard3.setBoardId(445)
+        newCard3 = archivedCardClient.createCard(userId1, newCard3)
 
-        when:
-        def newCard2 = [
-                text: 'A new card for user 2'
-        ]
+        Card newCard4 = new Card()
+        newCard4.setText("Test text 4")
+        newCard4.setBoardId(445)
+        newCard4 = archivedCardClient.createCard(userId1, newCard4)
 
-
-        response = callRest {
-            restClient.post(
-                    path : basePathUser2,
-                    body: newCard2,
-                    contentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader]
-            )
-        }
-        newCard2 = response.responseData
-
-        then:
-        assert response.status == HTTP_OK
-        assert response.responseData.text == newCard2.text
-        assert response.responseData.userId == userId2
-        assert response.responseData.date != null
-        assert response.responseData.id != null
-
+        Card newCard5 = new Card()
+        newCard5.setText("Test text 5")
+        newCard5.setBoardId(445)
+        newCard5 = archivedCardClient.createCard(userId1, newCard5)
 
 
         when:
-        response = callRest {
-            restClient.get(
-                    path : basePathUser1,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
-            )
-        }
+        List<Card> cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 2);
 
         then:
-        assert response.status == HTTP_OK
-        assert response.responseData.size == 1
-        assert response.responseData[0].text == newCard1.text
-        assert response.responseData[0].userId == newCard1.userId
-        assert response.responseData[0].date == newCard1.date
-        assert response.responseData[0].id != null
-
+        assert cardList.size == 2
+        assert cardList[0].id == newCard1.id
+        assert cardList[1].id == newCard2.id
 
         when:
-        response = callRest {
-            restClient.get(
-                    path : basePathUser2,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
-            )
-        }
+        cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 3);
 
         then:
-        assert response.status == HTTP_OK
-        assert response.responseData.size == 1
-        assert response.responseData[0].text == newCard2.text
-        assert response.responseData[0].userId == newCard2.userId
-        assert response.responseData[0].date == newCard2.date
-        assert response.responseData[0].id != null
-
-
+        assert cardList.size == 3
+        assert cardList[0].id == newCard1.id
+        assert cardList[1].id == newCard2.id
+        assert cardList[2].id == newCard3.id
 
         when:
-        String cardId1 = newCard1.id
-        String deletePath = "/archivedCards/${userId1}/${cardId1}"
-        response = callRest {
-            restClient.delete(
-                    path : deletePath,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
-            )
-        }
+        cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 1, 2);
 
         then:
-        assert response.status == HTTP_NO_CONTENT
-
-        when:
-        response = callRest {
-            restClient.get(
-                    path : basePathUser1,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
-            )
-        }
-
-        then:
-        assert response.status == HTTP_OK
-        assert response.responseData.size == 0
+        assert cardList.size == 2
+        assert cardList[0].id == newCard3.id
+        assert cardList[1].id == newCard4.id
 
 
-        when:
-        String cardId2 = newCard2.id
-        String deletePath2 = "/archivedCards/${userId2}/${cardId2}"
-        response = callRest {
-            restClient.delete(
-                    path : deletePath2,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
+        cleanup:
+        archivedCardClient.deleteCard(userId1, newCard1.id )
+        archivedCardClient.deleteCard(userId1, newCard2.id )
+        archivedCardClient.deleteCard(userId1, newCard3.id )
+        archivedCardClient.deleteCard(userId1, newCard4.id )
+        archivedCardClient.deleteCard(userId1, newCard5.id )
 
-            )
-        }
-
-        then:
-        assert response.status == HTTP_NO_CONTENT
-
-        when:
-        response = callRest {
-            restClient.get(
-                    path : basePathUser2,
-                    requestContentType:  'application/json',
-                    headers: ["Authorization" : validAuthHeader ]
-
-            )
-        }
-
-        then:
-        assert response.status == HTTP_OK
-        assert response.responseData.size == 0
-
-
-    }
-
-
-    private String generateBogusAuthenticationHeader() {
-        String baseUserAndPassword = accesskeyid + ":" + secretkey + "xxx"
-        String badUserAndPasswordEncoded = baseUserAndPassword.bytes.encodeBase64().toString()
-        String headerValue = "Basic " + badUserAndPasswordEncoded
-        return headerValue
-    }
-
-
-    static def callRest(def closure) {
-        try {
-            return closure()
-        } catch (HttpResponseException ex) {
-            return ex.response
-        }
     }
 
 

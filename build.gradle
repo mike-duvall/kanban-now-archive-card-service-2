@@ -103,5 +103,8 @@ dependencies {
         exclude group: 'org.codehaus.groovy'
     }
 
+    testCompile 'com.netflix.feign:feign-core:8.15.0'
+    testCompile 'com.netflix.feign:feign-gson:8.15.0'
+
 }
 
