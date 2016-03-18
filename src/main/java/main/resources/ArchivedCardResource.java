@@ -57,7 +57,12 @@ public class ArchivedCardResource {
 
     @GET
     @Path("{userId}")
-    public List<ArchivedCard> getArrchivedCards(@PathParam("userId") String userId, @QueryParam("boardId") Long boardId) {
+    public List<ArchivedCard> getArrchivedCards(
+            @PathParam("userId") String userId,
+            @QueryParam("boardId") Long boardId,
+            @QueryParam("pageNumber") Integer pageNumber,
+            @QueryParam("pageSize") Integer pageSize
+            ) {
         securityCheck();
         if(userId.equals("boom")) {
             throw new RuntimeException("Test of error logging");
@@ -80,6 +85,13 @@ public class ArchivedCardResource {
 
             parameters = new Object[] {userId};
             types = new int[] {Types.VARCHAR};
+        }
+
+        query += " ORDER BY archiveddate";
+
+        if(pageNumber != null && pageSize != null) {
+            long offset = pageNumber * pageSize;
+            query += " LIMIT " + pageSize + " OFFSET " + offset;
         }
 
         List<ArchivedCard> archivedCardList = this.jdbcTemplate.query(
