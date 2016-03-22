@@ -6,7 +6,8 @@ import feign.gson.GsonDecoder
 import feign.gson.GsonEncoder
 import groovyx.net.http.RESTClient
 import main.archivecardserviceclient.ArchivedCardClient
-import main.archivecardserviceclient.Card
+import main.archivecardserviceclient.ClientCard
+import main.archivecardserviceclient.ClientPagedCardList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import spock.lang.Specification
@@ -63,34 +64,35 @@ class PagingSpec extends Specification {
                 .target(ArchivedCardClient.class, baseUrl);
 
 
-        Card newCard1 = new Card()
+        ClientCard newCard1 = new ClientCard()
         newCard1.setText("Test text 1")
         newCard1.setBoardId(444)
         newCard1 = archivedCardClient.createCard(userId1, newCard1)
 
-        Card newCard2 = new Card()
+        ClientCard newCard2 = new ClientCard()
         newCard2.setText("Test text 2")
         newCard2.setBoardId(445)
         newCard2 = archivedCardClient.createCard(userId1, newCard2)
 
-        Card newCard3 = new Card()
+        ClientCard newCard3 = new ClientCard()
         newCard3.setText("Test text 3")
         newCard3.setBoardId(445)
         newCard3 = archivedCardClient.createCard(userId1, newCard3)
 
-        Card newCard4 = new Card()
+        ClientCard newCard4 = new ClientCard()
         newCard4.setText("Test text 4")
         newCard4.setBoardId(445)
         newCard4 = archivedCardClient.createCard(userId1, newCard4)
 
-        Card newCard5 = new Card()
+        ClientCard newCard5 = new ClientCard()
         newCard5.setText("Test text 5")
         newCard5.setBoardId(445)
         newCard5 = archivedCardClient.createCard(userId1, newCard5)
 
 
         when:
-        List<Card> cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 2);
+        ClientPagedCardList pagedCardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 2)
+        List<ClientCard> cardList = pagedCardList.data
 
         then:
         assert cardList.size == 2
@@ -98,7 +100,8 @@ class PagingSpec extends Specification {
         assert cardList[1].id == newCard2.id
 
         when:
-        cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 3);
+        pagedCardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 3);
+        cardList = pagedCardList.data
 
         then:
         assert cardList.size == 3
@@ -107,7 +110,8 @@ class PagingSpec extends Specification {
         assert cardList[2].id == newCard3.id
 
         when:
-        cardList = archivedCardClient.getCardsForUserWithPaging(userId1, 1, 2);
+        pagedCardList = archivedCardClient.getCardsForUserWithPaging(userId1, 1, 2);
+        cardList = pagedCardList.data
 
         then:
         assert cardList.size == 2
