@@ -9,5 +9,6 @@ import java.util.List;
 public class PagedArchivedCardList {
 
     List<ArchivedCard> data;
+    PagingData pagingData;
 
 }

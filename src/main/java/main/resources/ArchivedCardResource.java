@@ -4,6 +4,7 @@ import com.stormpath.sdk.account.Account;
 import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import main.api.ArchivedCard;
+import main.api.PagingData;
 import main.exception.ForbiddenException;
 import main.api.PagedArchivedCardList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,9 +154,19 @@ public class ArchivedCardResource {
 
         PagedArchivedCardList pagedArchivedCardList = new PagedArchivedCardList();
         pagedArchivedCardList.setData(archivedCardList);
+        PagingData pagingData = new PagingData();
+        pagingData.setTotalCount(calculateTotalCount(userId));
+        pagedArchivedCardList.setPagingData(pagingData);
+
         return pagedArchivedCardList;
     }
 
+    private long calculateTotalCount(String userId) {
+        String query = "select count(*) from " + archivedCardsTableName + " where user_id = ?";
+        Object[] parameters = new Object[]{userId};
+        long count = this.jdbcTemplate.queryForObject(query, parameters, Long.class);
+        return count;
+    }
 
 
     private class ArchivedCardRowMapper implements RowMapper<ArchivedCard> {

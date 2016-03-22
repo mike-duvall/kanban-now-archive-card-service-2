@@ -98,6 +98,7 @@ class PagingSpec extends Specification {
         assert cardList.size == 2
         assert cardList[0].id == newCard1.id
         assert cardList[1].id == newCard2.id
+        assert pagedCardList.pagingData.totalCount == 5
 
         when:
         pagedCardList = archivedCardClient.getCardsForUserWithPaging(userId1, 0, 3);
