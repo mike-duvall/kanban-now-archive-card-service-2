@@ -5,6 +5,7 @@ import com.stormpath.sdk.impl.account.DefaultAccount;
 import com.stormpath.sdk.servlet.account.AccountResolver;
 import main.api.ArchivedCard;
 import main.exception.ForbiddenException;
+import main.api.PagedArchivedCardList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -106,7 +107,7 @@ public class ArchivedCardResource {
 
     @GET
     @Path("paged/{userId}")
-    public List<ArchivedCard> getArchivedCardsPaged(
+    public PagedArchivedCardList getArchivedCardsPaged(
             @PathParam("userId") String userId,
             @QueryParam("boardId") Long boardId,
             @QueryParam("pageNumber") Integer pageNumber,
@@ -150,7 +151,9 @@ public class ArchivedCardResource {
                 new ArchivedCardRowMapper()
         );
 
-        return archivedCardList;
+        PagedArchivedCardList pagedArchivedCardList = new PagedArchivedCardList();
+        pagedArchivedCardList.setData(archivedCardList);
+        return pagedArchivedCardList;
     }
 
 

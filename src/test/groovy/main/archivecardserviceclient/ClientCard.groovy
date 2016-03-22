@@ -1,6 +1,6 @@
 package main.archivecardserviceclient
 
-class Card {
+class ClientCard {
 
     String text
     long boardId
