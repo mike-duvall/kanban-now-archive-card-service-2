@@ -42,8 +42,6 @@ class PagingSpec extends Specification {
 
     String userId1 = 'userId1'
     String userId2 = 'userId2'
-    String basePathUser1 = "/archivedCards/${userId1}"
-    String basePathUser2 = "/archivedCards/${userId2}"
 
 
     def setup() {

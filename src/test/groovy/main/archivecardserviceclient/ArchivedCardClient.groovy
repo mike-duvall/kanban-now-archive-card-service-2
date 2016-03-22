@@ -13,7 +13,7 @@ interface ArchivedCardClient {
     List<Card> getCardsForUserAndBoard(@Param("userId") String userId, @Param("boardId") Integer boardId);
 
 
-    @RequestLine("GET /archivedCards/{userId}/?pageNumber={pageNumber}&pageSize={pageSize}")
+    @RequestLine("GET /archivedCards/paged/{userId}/?pageNumber={pageNumber}&pageSize={pageSize}")
     List<Card> getCardsForUserWithPaging(
             @Param("userId") String userId,
             @Param("pageNumber") Integer pageNumber,
