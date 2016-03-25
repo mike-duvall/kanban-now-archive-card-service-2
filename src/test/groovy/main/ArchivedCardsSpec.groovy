@@ -176,12 +176,12 @@ class ArchivedCardsSpec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 1
-        assert response.responseData[0].text == newCard2.text
-        assert response.responseData[0].userId == newCard2.userId
-        assert response.responseData[0].date == newCard2.date
-        assert response.responseData[0].id != null
-        assert response.responseData[0].boardId == 7
+        assert response.responseData.data.size == 1
+        assert response.responseData.data[0].text == newCard2.text
+        assert response.responseData.data[0].userId == newCard2.userId
+        assert response.responseData.data[0].date == newCard2.date
+        assert response.responseData.data[0].id != null
+        assert response.responseData.data[0].boardId == 7
 
     }
 
@@ -250,11 +250,11 @@ class ArchivedCardsSpec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 1
-        assert response.responseData[0].text == newCard1.text
-        assert response.responseData[0].userId == newCard1.userId
-        assert response.responseData[0].date == newCard1.date
-        assert response.responseData[0].id != null
+        assert response.responseData.data.size == 1
+        assert response.responseData.data[0].text == newCard1.text
+        assert response.responseData.data[0].userId == newCard1.userId
+        assert response.responseData.data[0].date == newCard1.date
+        assert response.responseData.data[0].id != null
 
 
         when:
@@ -269,11 +269,11 @@ class ArchivedCardsSpec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 1
-        assert response.responseData[0].text == newCard2.text
-        assert response.responseData[0].userId == newCard2.userId
-        assert response.responseData[0].date == newCard2.date
-        assert response.responseData[0].id != null
+        assert response.responseData.data.size == 1
+        assert response.responseData.data[0].text == newCard2.text
+        assert response.responseData.data[0].userId == newCard2.userId
+        assert response.responseData.data[0].date == newCard2.date
+        assert response.responseData.data[0].id != null
 
 
 
@@ -304,7 +304,7 @@ class ArchivedCardsSpec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 0
+        assert response.responseData.data.size == 0
 
 
         when:
@@ -334,7 +334,7 @@ class ArchivedCardsSpec extends Specification {
 
         then:
         assert response.status == HTTP_OK
-        assert response.responseData.size == 0
+        assert response.responseData.data.size == 0
 
 
     }
