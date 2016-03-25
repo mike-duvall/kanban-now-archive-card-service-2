@@ -162,60 +162,6 @@ public class ArchivedCardResource {
     }
 
 
-    @GET
-    @Path("paged/{userId}")
-    public PagedArchivedCardList getArchivedCardsPaged2(
-            @PathParam("userId") String userId,
-            @QueryParam("boardId") Long boardId,
-            @QueryParam("pageNumber") Integer pageNumber,
-            @QueryParam("pageSize") Integer pageSize
-    ) {
-        securityCheck();
-        if(userId.equals("boom")) {
-            throw new RuntimeException("Test of error logging");
-        }
-
-        String query;
-        Object[] parameters;
-        int[] types;
-
-        if(boardId != null) {
-            query = "select cardtext, archiveddate, id, user_id, board_id from " + archivedCardsTableName +
-                    " where user_id = ? and board_id = ?";
-
-            parameters = new Object[] {userId, boardId};
-            types = new int[] {Types.VARCHAR, Types.BIGINT};
-        }
-        else {
-            query = "select cardtext, archiveddate, id, user_id, board_id from " + archivedCardsTableName +
-                    " where user_id = ?";
-
-            parameters = new Object[] {userId};
-            types = new int[] {Types.VARCHAR};
-        }
-
-        query += " ORDER BY archiveddate";
-
-        if(pageNumber != null && pageSize != null) {
-            long offset = pageNumber * pageSize;
-            query += " LIMIT " + pageSize + " OFFSET " + offset;
-        }
-
-        List<ArchivedCard> archivedCardList = this.jdbcTemplate.query(
-                query,
-                parameters,
-                types,
-                new ArchivedCardRowMapper()
-        );
-
-        PagedArchivedCardList pagedArchivedCardList = new PagedArchivedCardList();
-        pagedArchivedCardList.setData(archivedCardList);
-        PagingData pagingData = new PagingData();
-        pagingData.setTotalCount(calculateTotalCount(userId));
-        pagedArchivedCardList.setPagingData(pagingData);
-
-        return pagedArchivedCardList;
-    }
 
     private long calculateTotalCount(String userId) {
         String query = "select count(*) from " + archivedCardsTableName + " where user_id = ?";
@@ -238,7 +184,6 @@ public class ArchivedCardResource {
             return card;
         }
     };
-
 
 
     private String convertTimestampToISO8601String(Timestamp timestamp) {
